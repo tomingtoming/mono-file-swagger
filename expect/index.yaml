@@ -1,7 +1,21 @@
-swagger: '2.0'
+openapi: "3.0.0"
 info:
-  $ref: ./info/index.yaml
+  version: 1.0.0
+  title: Swagger Petstore
+  license:
+    name: MIT
+servers:
+  - url: http://petstore.swagger.io/v1
 paths:
-  $ref: ./paths/index.yaml
-definitions:
-  $ref: ./definitions/index.yaml
+  /pets:
+    $ref: './paths/pets/index.yaml'
+  /pets/{petId}:
+    $ref: './paths/pets/petId/index.yaml'
+components:
+  schemas:
+    Pet:
+      $ref: './components/schemas/Pet.yaml'
+    Pets:
+      $ref: './components/schemas/Pets.yaml'
+    Error:
+      $ref: './components/schemas/Pets.yaml'
