@@ -13,7 +13,7 @@ program
   .option('-o --output-format [output]',
           'output format. Choices are "json" and "yaml" (Default is json)',
           'json')
-  .usage('[options] <yaml file ...>')
+  .usage('[options] <yaml file directory>')
   .parse(process.argv);
 
 if (program.outputFormat !== 'json' && program.outputFormat !== 'yaml') {

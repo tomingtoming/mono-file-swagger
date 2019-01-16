@@ -5,7 +5,7 @@
   "main": "resolve.js",
   "scripts": {
     "start": "node resolve.js",
-    "test": "node resolve.js -o yaml openapi.yaml actual && diff -r expect actual"
+    "test": "node resolve.js -o yaml openapi.yaml actual && diff -ur expect actual"
   },
   "bin": {
     "multi-file-swagger": "resolve.js"
