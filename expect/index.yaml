@@ -1,4 +1,4 @@
-openapi: "3.0.0"
+openapi: 3.0.0
 info:
   version: 1.0.0
   title: Swagger Petstore
@@ -18,4 +18,4 @@ components:
     Pets:
       $ref: './components/schemas/Pets.yaml'
     Error:
-      $ref: './components/schemas/Pets.yaml'
+      $ref: './components/schemas/Error.yaml'
