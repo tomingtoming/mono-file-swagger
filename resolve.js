@@ -2,18 +2,21 @@
 
 'use strict';
 
-var resolve = require('json-refs').resolveRefs;
 var YAML = require('js-yaml');
 var fs = require('fs');
+var jp = require('jsonpath');
 
 var program = require('commander');
 
 program
-  .version('2.0.0')
+  .version('0.0.1')
   .option('-o --output-format [output]',
-          'output format. Choices are "json" and "yaml" (Default is json)',
+          'output format. Choices are "json" and "yaml"',
           'json')
-  .usage('[options] <yaml file directory>')
+  .option('-s --split-format [split]',
+          'split format. Specify comma separated JSONPath',
+          '$.paths.*,$.components.schemas.*')
+  .usage('[options] <yaml file> <target directory>')
   .parse(process.argv);
 
 if (program.outputFormat !== 'json' && program.outputFormat !== 'yaml') {
@@ -28,19 +31,23 @@ if (!fs.existsSync(file)) {
   process.exit(1);
 }
 
+var directory = program.args[1];
+
+if (!fs.existsSync(directory)) {
+    fs.mkdirSync(directory);
+}
+
 var root = YAML.safeLoad(fs.readFileSync(file).toString());
-var options = {
-  filter        : ['relative', 'remote'],
-  loaderOptions : {
-    processContent : function (res, callback) {
-      callback(null, YAML.safeLoad(res.text));
-    }
-  }
+var jsonPaths = program.splitFormat.split(",");
+
+
+var a = (root, jsonPaths) => {
+    return root;
 };
-resolve(root, options).then(function (results) {
-  if (program.outputFormat === 'yaml') {
-    console.log(YAML.safeDump(results.resolved));
-  } else if (program.outputFormat === 'json') {
-    console.log(JSON.stringify(results.resolved, null, 2));
-  }
-});
+
+var index = a(root, jsonPaths);
+if (program.outputFormat === 'yaml') {
+  fs.writeFileSync(directory + '/index.yaml', YAML.safeDump(index));
+} else if (program.outputFormat === 'json') {
+  fs.writeFileSync(directory + '/index.yaml', JSON.stringify(index, null, 2));
+}

@@ -1,11 +1,11 @@
 {
   "name": "mono-file-swagger",
-  "version": "2.2.0",
+  "version": "0.0.1",
   "description": "Mono-file Swagger",
   "main": "resolve.js",
   "scripts": {
     "start": "node resolve.js",
-    "test": "node resolve.js -o yaml openapi.yaml actual && diff -ur expect actual"
+    "test": "rm -rf actual/ && node resolve.js -o yaml -s paths.*,components.schemas.* openapi.yaml actual && diff -ur expect actual"
   },
   "bin": {
     "multi-file-swagger": "resolve.js"
@@ -14,6 +14,6 @@
   "dependencies": {
     "commander": "^2.9.0",
     "js-yaml": "^3.9.1",
-    "json-refs": "^2.1.6"
+    "jsonpath": "^1.0.0"
   }
 }
