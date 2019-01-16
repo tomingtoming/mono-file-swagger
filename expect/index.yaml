@@ -8,14 +8,14 @@ servers:
   - url: 'http://petstore.swagger.io/v1'
 paths:
   /pets:
-    $ref: './paths/pets/index.yaml'
+    $ref: ./paths/pets/index.yaml
   '/pets/{petId}':
-    $ref: './paths/pets/petId/index.yaml'
+    $ref: ./paths/pets/petId/index.yaml
 components:
   schemas:
     Pet:
-      $ref: './components/schemas/Pet.yaml'
+      $ref: ./components/schemas/Pet.yaml
     Pets:
-      $ref: './components/schemas/Pets.yaml'
+      $ref: ./components/schemas/Pets.yaml
     Error:
-      $ref: './components/schemas/Error.yaml'
+      $ref: ./components/schemas/Error.yaml

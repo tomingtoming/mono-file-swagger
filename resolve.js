@@ -40,18 +40,18 @@ if (!fs.existsSync(directory)) {
 const root = YAML.safeLoad(fs.readFileSync(file).toString());
 const jsonPaths = program.splitFormat.split(",");
 
-function replace(obj, path, replaced) {
-    if (path.length === 1) {
-        obj[path[0]] = replaced;
-    } else {
-        replace(obj[path[0]], path.slice(1), replaced);
-    }
-}
-
 function resolve(root, jsonPaths) {
     jsonPaths.forEach(jsonPath => {
-        jp.paths(root, jsonPath).forEach(matchPath => {
-            replace(root, matchPath.slice(1), {"$ref": "replaced"});
+        jp.paths(root, jsonPath).forEach(pathArray => {
+            const path = jp.stringify(pathArray);
+            const withSlash = pathArray.some((elem) => elem.includes('/'));
+            const refKey = path
+                .replace(/\./g, '/')
+                .replace(/[{}\[\]"]/g, '')
+                .replace('$', '.')
+                .replace(/$/, withSlash ? '/index.yaml' : '.yaml');
+            const refObj = jp.value(root, path);
+            jp.value(root, path, {"$ref": refKey});
         });
     });
     return root;
