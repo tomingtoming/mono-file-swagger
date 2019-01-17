@@ -16,10 +16,10 @@ get:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Pets"
+            $ref: '#/components/schemas/Pets'
     default:
       description: unexpected error
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Error"
+            $ref: '#/components/schemas/Error'

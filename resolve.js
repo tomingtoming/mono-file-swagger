@@ -3,6 +3,7 @@
 'use strict';
 
 const YAML = require('js-yaml');
+const path = require('path');
 const fs = require('fs');
 const jp = require('jsonpath');
 
@@ -25,41 +26,49 @@ if (program.outputFormat !== 'json' && program.outputFormat !== 'yaml') {
 }
 
 const file = program.args[0];
+const directory = program.args[1];
 
 if (!fs.existsSync(file)) {
     console.error('File does not exist. (' + file + ')');
     process.exit(1);
 }
 
-const directory = program.args[1];
-
-if (!fs.existsSync(directory)) {
-    fs.mkdirSync(directory);
-}
-
 const root = YAML.safeLoad(fs.readFileSync(file).toString());
 const jsonPaths = program.splitFormat.split(",");
 
-function resolve(root, jsonPaths) {
-    jsonPaths.forEach(jsonPath => {
-        jp.paths(root, jsonPath).forEach(pathArray => {
-            const path = jp.stringify(pathArray);
-            const withSlash = pathArray.some((elem) => elem.includes('/'));
-            const refKey = path
-                .replace(/\./g, '/')
-                .replace(/[{}\[\]"]/g, '')
-                .replace('$', '.')
-                .replace(/$/, withSlash ? '/index.yaml' : '.yaml');
-            const refObj = jp.value(root, path);
-            jp.value(root, path, {"$ref": refKey});
-        });
-    });
-    return root;
+function mkdirp(dir) {
+    if (!fs.existsSync(dir)) {
+        if (path.basename(dir) === '.') {
+            dir = path.dirname(dir);
+        }
+        mkdirp(path.dirname(dir));
+        fs.mkdirSync(dir);
+    }
 }
 
-const index = resolve(root, jsonPaths);
-if (program.outputFormat === 'yaml') {
-    fs.writeFileSync(directory + '/index.yaml', YAML.safeDump(index));
-} else if (program.outputFormat === 'json') {
-    fs.writeFileSync(directory + '/index.yaml', JSON.stringify(index, null, 2));
+function output(targetPath, object, outputFormat) {
+    mkdirp(path.dirname(targetPath))
+    if (outputFormat === 'yaml') {
+        fs.writeFileSync(targetPath, YAML.safeDump(object));
+    } else if (outputFormat === 'json') {
+        fs.writeFileSync(targetPath, JSON.stringify(object, null, 2));
+    }
 }
+
+jsonPaths.forEach(jsonPath => {
+    jp.paths(root, jsonPath).forEach(pathArray => {
+        const pathString = jp.stringify(pathArray);
+        const pathContainsSlash = pathArray.some((elem) => elem.includes('/'));
+        const refPath = pathString
+            .replace(/\./g, '/')
+            .replace(/[{}\[\]"]/g, '')
+            .replace('$', '.')
+            .replace(/$/, pathContainsSlash ? '/index.yaml' : '.yaml');
+        const refObj = jp.value(root, pathString);
+        const exactRefPath = directory + '/' + refPath;
+        output(directory + '/' + refPath, refObj, program.outputFormat);
+        jp.value(root, pathString, {"$ref": refPath});
+    });
+});
+
+output(directory + '/index.yaml', root, program.outputFormat);
