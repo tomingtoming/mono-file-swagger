@@ -1,6 +1,6 @@
 {
   "name": "mono-file-swagger",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Mono-file Swagger",
   "main": "resolve.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "test": "rm -rf actual/ && node resolve.js -o yaml -s paths.*,components.schemas.* openapi.yaml actual && diff -ur expect actual"
   },
   "bin": {
-    "multi-file-swagger": "resolve.js"
+    "mono-file-swagger": "resolve.js"
   },
   "license": "MIT",
   "dependencies": {
