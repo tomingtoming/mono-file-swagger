@@ -17,7 +17,7 @@ program
     .option('-s --split-format [split]',
         'split format. Specify comma separated JSONPath',
         '$.paths.*,$.components.schemas.*')
-    .usage('[options] <yaml file> <target directory>')
+    .usage('[options] <yaml file> <target file>')
     .parse(process.argv);
 
 if (program.outputFormat !== 'json' && program.outputFormat !== 'yaml') {
@@ -25,15 +25,15 @@ if (program.outputFormat !== 'json' && program.outputFormat !== 'yaml') {
     process.exit(1);
 }
 
-const file = program.args[0];
-const directory = program.args[1];
+const inputFile = program.args[0];
+const outputFile = program.args[1];
 
-if (!fs.existsSync(file)) {
-    console.error('File does not exist. (' + file + ')');
+if (!fs.existsSync(inputFile)) {
+    console.error('File does not exist. (' + inputFile + ')');
     process.exit(1);
 }
 
-const root = YAML.safeLoad(fs.readFileSync(file).toString());
+const root = YAML.safeLoad(fs.readFileSync(inputFile).toString());
 const jsonPaths = program.splitFormat.split(",");
 
 function mkdirp(dir) {
@@ -65,10 +65,10 @@ jsonPaths.forEach(jsonPath => {
             .replace('$', '.')
             .replace(/$/, pathContainsSlash ? '/index.yaml' : '.yaml');
         const refObj = jp.value(root, pathString);
-        const exactRefPath = directory + '/' + refPath;
-        output(directory + '/' + refPath, refObj, program.outputFormat);
+        const exactRefPath = outputFile + '/' + refPath;
+        output(path.dirname(outputFile) + '/' + refPath, refObj, program.outputFormat);
         jp.value(root, pathString, {"$ref": refPath});
     });
 });
 
-output(directory + '/index.yaml', root, program.outputFormat);
+output(outputFile, root, program.outputFormat);

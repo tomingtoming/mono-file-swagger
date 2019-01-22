@@ -5,7 +5,7 @@
   "main": "resolve.js",
   "scripts": {
     "start": "node resolve.js",
-    "test": "rm -rf actual/ && node resolve.js -o yaml -s paths.*,components.schemas.* openapi.yaml actual && diff -ur expect actual"
+    "test": "rm -rf actual/ && node resolve.js -o yaml -s paths.*,components.schemas.* openapi.yaml actual/openapi.yaml && diff -ur expect actual"
   },
   "bin": {
     "mono-file-swagger": "resolve.js"
